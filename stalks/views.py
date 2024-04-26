@@ -4,7 +4,8 @@ from django.http import HttpResponse
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from .models import user
+from stalks.models import merchandise
+
 
 
 def home(request):
@@ -26,18 +27,42 @@ def services(request):
 @csrf_exempt
 def addstalks(request):
     if request.method == 'POST':
-        merchandisename = request.POST('merchandisename')
-        merchandisetype = request.POST('merchandisetype')
-        merchandiseamount = request.POST('merchandiseamount')
+        merchandisename = request.POST.get('merchandisename')
+        merchandisetype = request.POST.get('merchandisetype')
+        merchandiseamount = request.POST.get('merchandiseamount')
 
-        obj1=stalks(merchandisename=merchandisename,merchandisetype=merchandisetype,merchandiseamount=merchandiseamount)
-        obj1=save()
+        obj1 = stalks(merchandisename=merchandisename,merchandisetype=merchandisetype,merchandiseamount=merchandiseamount)
+        obj1.save()
 
-        mydata = user.objects.all()
+        mydata = merchandise.objects.all()
         context = {"data": mydata}
+    return render(request,"stalks.html",context)
 
 
-        return render(request,"stalks.html",context)
+def updatestalks(request,id):
+    if request.method == 'POST':
+        merchandisename = request.POST.get('merchandisename')
+        merechandisetype = request.POST.get('merchandisetype')
+        merchandiseamount = request.POST.get('merchandiseamount')
 
 
+        #modifying the student details based on the student id given
+        updatestalks = merchandise.objects.get(id=id)#here i fetch the student to be changed
+        updatestalks.merchandisename = merchandisename
+        updatestalks.merchandisetype = merechandisetype
+        updatestalks.merchandiseamount = merchandiseamount
+        #save the changes
+        updatestalks.save()
+        #display the new changes in html table to fetch them from the database table
+        data = merchandise.objects.all()
+        #i create a dictionary to hold the fetched info
+        context = {'data': data}
+        #pass the fetched info back to the dashboard
+    return render(request, 'stalks.html',context)
+
+
+def deletestalks(request,id):
+    deletestalks = merchandise.objects.get(id=id)
+    deletestalks.delete()
+    return redirect('/stalks')
 # Create your views here
