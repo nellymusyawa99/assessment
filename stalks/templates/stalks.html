@@ -1,87 +1,67 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registration Form</title>
+  <title>Merchandise Records</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
 
 <div class="container">
-  <h2>Registration Form</h2>
+  <h2>Merchandise Records</h2>
   <form action="/addstalks" method="POST">
-      {% csrf_token %}
-
+    {% csrf_token %}
     <div class="form-group">
-      <label for="merchandisename">merchandisename:</label>
+      <label for="merchandisename">Merchandise Name:</label>
       <input type="text" class="form-control" id="merchandisename" name="merchandisename" required>
     </div>
     <div class="form-group">
-      <label for="merchandisetype">merchandisetype:</label>
+      <label for="merchandisetype">Merchandise Type:</label>
       <input type="text" class="form-control" id="merchandisetype" name="merchandisetype" required>
     </div>
     <div class="form-group">
-      <label for="merchandiseamount">merchandiseamount:</label>
+      <label for="merchandiseamount">Merchandise Amount:</label>
       <input type="number" class="form-control" id="merchandiseamount" name="merchandiseamount" required>
     </div>
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
-</div>
 
+  <hr class="bg-primary">
 
-<hr class="bg-primary">
-
-<form>
-<div class="boarder p-3">
-<div class="selector2=container">
-    <h1>merchandise records</h1>
-    <table class="table">
+  <div class="boarder p-3">
+    <div class="selector2=container">
+      <h1>Merchandise Records</h1>
+      <table class="table">
         <thead>
-        <tr>
-            <th>name</th>
-            <th>type</th>
-            <th>amount</th>
-            <th>update</th>
-            <th>delete</th>
-        </tr>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Amount</th>
+            <th>Update</th>
+            <th>Delete</th>
+          </tr>
         </thead>
         <tbody>
-        {% for merchandise in data %}
+          {% for item in data %}
           <tr>
-              <td>{{ merchandise.name }}</td>
-              <td>{{ merchandise.type }}</td>
-              <td>{{ merchandise.amount }}</td>
-              <td>
-                  <a href="/updatemerchandise/{{ student.id }}" type="button" class="btn btn-outline-success">Edit</a>
-              </td>
-              <td>
-                  <a href="/deletemerchandise/{{ student.id }}" type="button" class="btn btn-outline-danger">Delete</a>
-              </td>
+            <td>{{ item.merchandisename }}</td>
+            <td>{{ item.merchandisetype }}</td>
+            <td>{{ item.merchandiseamount }}</td>
+            <td>
+              <a href="{% url 'updatestalks' item.id %}" type="button" class="btn btn-outline-success">Edit</a>
+            </td>
+            <td>
+              <a href="/deletemerchandise/{{ item.id }}" type="button" class="btn btn-outline-danger">Delete</a>
+            </td>
           </tr>
+          {% endfor %}
         </tbody>
-    </table>
+      </table>
+    </div>
+  </div>
 </div>
-</div>
-</form>
-         {% endfor %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <!-- Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

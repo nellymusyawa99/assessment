@@ -1,12 +1,10 @@
-from django.contrib.auth.models import User
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.core.exceptions import ObjectDoesNotExist
 from django.template import loader
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
-from stalks.models import merchandise
-
-
+from .models import merchandise as MerchandiseModel  # Rename the merchandise model
 
 def home(request):
     template = loader.get_template('home.html')
@@ -17,52 +15,60 @@ def merchandise(request):
     return HttpResponse(template.render())
 
 def stalks(request):
-    template = loader.get_template('stalks.html')
-    return HttpResponse(template.render())
+    merchandise_items = MerchandiseModel.objects.all()
+    context = {'merchandise_items': merchandise_items}
+    return render(request, 'stalks.html', context)
 
 def services(request):
     template = loader.get_template('services.html')
     return HttpResponse(template.render())
 
 @csrf_exempt
-def addstalks(request):
+def addStalks(request):
     if request.method == 'POST':
-        merchandisename = request.POST.get('merchandisename')
-        merchandisetype = request.POST.get('merchandisetype')
-        merchandiseamount = request.POST.get('merchandiseamount')
+        merchandise_name = request.POST.get('merchandisename')
+        merchandise_type = request.POST.get('merchandisetype')
+        merchandise_amount = request.POST.get('merchandiseamount')
 
-        obj1 = stalks(merchandisename=merchandisename,merchandisetype=merchandisetype,merchandiseamount=merchandiseamount)
-        obj1.save()
+        obj1 = MerchandiseModel.objects.create(merchandisename=merchandise_name, merchandisetype=merchandise_type, merchandiseamount=merchandise_amount)
 
-        mydata = merchandise.objects.all()
+        mydata = MerchandiseModel.objects.all()
         context = {"data": mydata}
-    return render(request,"stalks.html",context)
+        return render(request, "stalks.html", context)
+
+    return HttpResponse("This view is for POST requests only.")
 
 
-def updatestalks(request,id):
+
+def updatestalks(request, id):
     if request.method == 'POST':
-        merchandisename = request.POST.get('merchandisename')
-        merechandisetype = request.POST.get('merchandisetype')
-        merchandiseamount = request.POST.get('merchandiseamount')
+        merchandise_name = request.POST.get('merchandisename')
+        merchandise_type = request.POST.get('merchandisetype')
+        merchandise_amount = request.POST.get('merchandiseamount')
+
+        try:
+            update_stalks = MerchandiseModel.objects.get(id=id)
+        except MerchandiseModel.DoesNotExist:
+            return HttpResponse("Merchandise with this ID does not exist.", status=404)
+
+        update_stalks.merchandisename = merchandise_name
+        update_stalks.merchandisetype = merchandise_type
+        update_stalks.merchandiseamount = merchandise_amount
+        update_stalks.save()
+
+        updated_data = MerchandiseModel.objects.all()
+        context = {'data': updated_data}
+        return render(request, 'stalks.html', context)
+
+    else:
+        return HttpResponse("This view is for POST requests only.", status=405)
 
 
-        #modifying the student details based on the student id given
-        updatestalks = merchandise.objects.get(id=id)#here i fetch the student to be changed
-        updatestalks.merchandisename = merchandisename
-        updatestalks.merchandisetype = merechandisetype
-        updatestalks.merchandiseamount = merchandiseamount
-        #save the changes
-        updatestalks.save()
-        #display the new changes in html table to fetch them from the database table
-        data = merchandise.objects.all()
-        #i create a dictionary to hold the fetched info
-        context = {'data': data}
-        #pass the fetched info back to the dashboard
-    return render(request, 'stalks.html',context)
+def deletestalks(request, id):
+    try:
+        merchandise_instance = MerchandiseModel.objects.get(id=id)
+        merchandise_instance.delete()
+    except MerchandiseModel.DoesNotExist:
+        return HttpResponse("The merchandise you are trying to delete does not exist.")
 
-
-def deletestalks(request,id):
-    deletestalks = merchandise.objects.get(id=id)
-    deletestalks.delete()
-    return redirect('/stalks')
-# Create your views here
+    return redirect('stalks')  # Redirect to the 'stalks' URL pattern

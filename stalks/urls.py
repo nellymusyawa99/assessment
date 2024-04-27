@@ -6,12 +6,12 @@ urlpatterns = [
     path('merchandise/', views.merchandise, name='merchandise'),
     path('', views.stalks, name='stalks'),
     path('services/', views.services, name='services'),
-    path('addstalks', views.addstalks, name='addingstalks'),
+    path('addstalks', views.addStalks, name='addingstalks'),
 
-    path('addstalks', views.addstalks, name='addingstalks'),
+    path('addstalks', views.addStalks, name='addingstalks'),
 
-    path('updatestalks/<id>', views.updatestalks, name='updatestalks'),
-    path('deletestalks/<id>', views.deletestalks),
+    path('updatestalks/<int:id>/', views.updatestalks, name='updatestalks'),
+    path('deletemerchandise/<int:id>/', views.deletestalks, name='deletemerchandise'),  # Ensure trailing slash and int:id
 
 
 
